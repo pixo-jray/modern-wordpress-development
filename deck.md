@@ -72,10 +72,10 @@ _class: lead
 * Fell in love with Drupal 
 * Learned how to "theme" websites
 * Started to get frustrated with Drupal 6 and 7 theming
-* Learned how to write object oriented code and MVC frameworks
+* Learned how to write object-oriented code and MVC frameworks
 * Even more frustrated with Drupal
 * Started working with Wordpress
-* Tried out some MVC principles and they worked!!
+* Tried out some MVC principles in Wordpress, and they worked!!
 
 
 --- 
@@ -126,7 +126,7 @@ Why?
 class: lead
 -->
 
-# Let's modernize Wordpress 
+# <!--fit--> Let's modernize Wordpress 
 # :smile:
 
 
@@ -275,6 +275,88 @@ function create_posttype() {
 }
 add_action( 'init', 'create_posttype' );
 ```
+
+---
+
+# ACF Builder
+
+![image](/assets/acf-pro.png)
+
+https://github.com/StoutLogic/acf-builder
+
+---
+
+```php
+// functions.php
+<?php 
+  
+acf_add_local_field_group([
+    'key' => 'group_1',
+    'title' => 'My Group',
+    'fields' => [
+        [
+            'key' => 'field_title',
+            'label' => 'Title',
+            'name' => 'title',
+            'type' => 'text',
+        ],
+        [
+            'key' => 'field_description',
+            'label' => 'Description',
+            'name' => 'description',
+            'type' => 'textarea',
+        ]
+    ],
+    'location' => [
+        [
+            [
+                'param' => 'post_type',
+                'operator' => '==',
+                'value' => 'post',
+            ],
+        ],
+    ],
+    'menu_order' => 0,
+    'position' => 'normal',
+    'style' => 'default',
+    'label_placement' => 'top',
+    'instruction_placement' => 'label',
+]);
+```
+
+---
+
+```php
+<?php 
+
+use StoutLogic\AcfBuilder\FieldsBuilder;
+
+$post = new FieldsBuilder('post');
+
+$post
+    ->setLocation('post_type', '==', 'post');
+
+$post
+    ->addTrueFalse('enable_example', ['ui' => 1])
+        ->setInstructions('Enables our example fields shown below.')
+
+    ->addText('title')
+        ->setInstructions('This is your title field.')
+        ->conditional('enable_example', '==', '1')
+
+    ->addTextarea('description')
+        ->setInstructions('This is your description field.')
+        ->conditional('enable_example', '==', '1');
+
+acf_add_local_field_group($post->build());
+```
+
+<!--
+- Chainable methods.
+- Very powerful and verbose methods.
+- Sane defaults.
+- Extendable field types.
+-->
 
 ---
 
