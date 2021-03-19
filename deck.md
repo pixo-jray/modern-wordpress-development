@@ -245,6 +245,17 @@ GRAVITY_FORMS_KEY='000'
 
 ---
 
+# Templating
+
+![width:500px](/assets/timber.svg)
+
+---
+
+# Next, include our MVC theme framework
+
+![width:500px](/assets/lumberjack.svg)
+
+---
 ```php
 // The way we used to do it.
 // functions.php
@@ -308,6 +319,16 @@ return [
     ],
 ];
 ```
+
+---
+
+# Unit Testing
+
+## ??
+
+:cry:
+
+We are working on a better framework for that.
 
 ---
 
