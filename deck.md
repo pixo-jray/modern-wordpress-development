@@ -142,14 +142,14 @@ We cannot overstate the importance of enjoying our work.
 <!--
 _class: lead
 -->
-![image](/assets/wordpress-logo.svg)
+![wordpress logo w:200px](/assets/wordpress-logo.svg)
 
 ## Why Wordpress?
 
 ---
 
 ![bg right:33% 100%](/assets/kip.gif)
-# Why developers like WordPress
+## Why we like WordPress
 
 * Familiar user interface
 * Huge ecosystem 
@@ -159,7 +159,7 @@ _class: lead
 
 ---
 
-# Why developers DON'T like WordPress
+## Why "developers" DON'T like WordPress
 
 * Big hacker target
 * Easily misused (too many plugins) 
@@ -180,6 +180,13 @@ _class: lead
 * **Dev/Test/Prod** — Use environment variables to keep our
   [configuration flexible](https://12factor.net/config) and our projects portable.
   
+<!--
+- Read: Have you ever inherited a CMS project that was a mess of plugins and configuration. We can read and discover code much easier configuration in a UI.
+- Write: I remember the first time someone told me they didn't use the Views module in a Drupal project.
+- IDE: When you write modern code your IDE becomes invaluable.
+- DEV/TEST/PROD: Check out the 12 Factor App principles.
+-->
+
 ---
 
 <!--
@@ -358,7 +365,7 @@ Bedrock replaces `wp-config-local.php with` separate environment variable and co
 
 # The .env file
 
-The modern standard for loading environment variable is the `.env` file. Now it comes to WordPress.
+The modern standard for loading environment variable is the `.env` file. Now we can have it in WordPress.
 All thanks to Bedrock's implementation of the `phpdotenv` [package](https://github.com/vlucas/phpdotenv).
 
 ---
@@ -388,6 +395,10 @@ LOGGED_IN_KEY='000'
 ACF_PRO_KEY='fill-in'
 GRAVITY_FORMS_KEY='fill-in'
 ```
+
+<!--
+We can and do use the .env file for more than just WordPress.
+-->
 
 ---
 
@@ -499,7 +510,7 @@ use Rareloop\Lumberjack\Http\Responses\TimberResponse;
 use Rareloop\Lumberjack\Post;
 use Timber\Timber;
 
-class SingleController extends Controller
+class SingleNewsController extends Controller
 {
     public function handle()
     {
@@ -594,12 +605,17 @@ in a way that supports our Atomic Design methodology.
 
 ---
 
-# Next
+![Fractal pattern library screenshot width:800px](/assets/fractal.png)
 
-![width:500px](/assets/lumberjack.svg)
+[Fractal](https://fractal.build/) pattern library.
+
+---
+
+![Lumberjack project logo width:500px](/assets/lumberjack.svg)
 
 Lumberjack is a framework for your theme that allows you to _"write better, more expressive and easier to maintain code."_
 
+It builds on the foundation of **Bedrock** and **Timber**.
 
 <!--
 - Lumberjack is a theme-based framework. 
@@ -610,9 +626,10 @@ Lumberjack is a framework for your theme that allows you to _"write better, more
 
 Lumberjack supports...
 
-* Creating post type objects
-* Creating custom routes
+* Creating/registering post type objects
 * WP Query builder
+* Registering menus
+* Defining custom routes
 * ...much more
 
 ---
@@ -687,7 +704,139 @@ return [
 
 ---
 
-Now show how we can use the Post Type class to make WP_Query's, etc.
+## Query builder
+
+---
+
+```php
+// WP_Query arguments
+$args = array(
+	'post_type'              => array( 'project' ),
+	'order'                  => 'ASC',
+	'orderby'                => 'title',
+);
+
+// The Query
+$query = new WP_Query( $args );
+```
+
+---
+
+```php
+use App\PostTypes\Project;
+
+$projects = Project::builder()->get();
+
+dump($projects);
+
+/*
+    Collection {
+        #items: array:2 [
+            0 => App\PostTypes\Project,
+            1 => App\PostTypes\Project,
+        ]
+    }
+*/
+```
+
+---
+
+```php
+use App\PostTypes\Project;
+
+$projects = Project::builder()
+    ->orderBy('title', 'asc')
+    ->limit(3)
+    ->get();
+```
+
+---
+
+```php
+use App\PostTypes\Project;
+use App\PostTypes\CaseStudy;
+use Rareloop\Lumberjack\QueryBuilder;
+
+$posts = (new QueryBuilder)->wherePostType([
+    Project::getPostType(),
+    CaseStudy::getPostType(),
+])
+->orderBy('date', 'asc')
+->get();
+```
+
+---
+
+### Scoped queries
+
+---
+
+```php
+namespace App\PostTypes;
+
+use Rareloop\Lumberjack\Post as LumberjackPost;
+
+class Post extends LumberjackPost
+{
+    ...
+
+    public function scopeFeatured($query)
+    {
+        $featuredPostIds = [1, 2];
+        return $query->whereIdIn($featuredPostIds);    
+    }
+}
+
+// page.php
+// Get the latest 3 featured posts
+$posts = Post::featured()
+    ->orderBy('date', 'desc')
+    ->limit(3)
+    ->get();
+```
+
+---
+
+## Register menus
+
+---
+
+```php
+<?php
+
+return [
+    /**
+     * config/menus.php 
+     * List of menus to register with WordPress during bootstrap
+     */
+    'menus' => [
+        'main-nav' => __('Main Navigation'),
+        'footer' => __('Footer Navigation')
+    ],
+];
+```
+
+---
+
+## Custom routes
+
+---
+
+```php
+// routes.php
+Router::get('path/to/page', 'TestController@show');
+
+// app/Http/Controllers/TestController.php
+namespace App\Http\Controllers;
+
+class TestController
+{
+    public function show()
+    {
+        return 'Hello World';
+    }
+}
+```
 
 ---
 
@@ -718,9 +867,8 @@ Now show how we can use the Post Type class to make WP_Query's, etc.
 ---
 
 ```php
-// functions.php
 <?php 
-  
+/* functions.php */
 acf_add_local_field_group([
     'key' => 'group_1',
     'title' => 'My Group',
@@ -824,6 +972,14 @@ We are working on a better framework for that.
 
 ---
 
+# Live Demo time
+
+---
+
+# Q & A
+
+---
+
 # Reading
 
 - [Clean code](https://www.freecodecamp.org/news/clean-coding-for-beginners)
@@ -831,9 +987,7 @@ We are working on a better framework for that.
 - [ACF Builder](https://github.com/StoutLogic/acf-builder)
 - [Lumberjack](https://lumberjack.rareloop.com/)
 - [Bedrock](https://roots.io/bedrock/)
-
-## and...
-
+- ...and alternative frameworks
 - [Carbon Fields](https://carbonfields.net/)
 - [WP Emerge - Wordpress MVC framework](https://github.com/htmlburger/wpemerge)
 
