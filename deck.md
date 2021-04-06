@@ -1,6 +1,6 @@
 ---
 theme: gaia
-_class: lead
+class: lead
 paginate: true
 backgroundColor: #eff5f5
 backgroundImage: url('/assets/white-top.svg')
@@ -43,12 +43,67 @@ footer: '![image](/assets/pixo-logo.svg)'
 <!--
 _class: lead
 -->
-![image](https://pixotech.com/image/build.svg)
+# A little about me
+
+![bg right:40% 70%](https://pixotech.com/image/build.svg)
+
+I am a lead web developer at Pixo here in Urbana. I work primarily on content management systems and websites - 
+especially WordPress.
 
 ---
 
+# My journey here
 
-# A little about me
+![Falcor from Never ending Story flying](/assets/falcor.gif)
+
+---
+
+## 1. Started as a web designer
+
+![photoshop logo](/assets/photoshop.jpeg)
+
+---
+
+## 2. Got into Drupal
+
+![drupal logo](/assets/drupal.png)
+
+---
+
+## 3. Learned front-end code
+
+HTML, CSS, JS, and some basic PHP
+
+---
+
+## 4. Started getting frustrated with Drupal 
+
+I was fighting with Drupal to produce the front-end code I wanted. 
+_It is better today but still a struggle in a lot of ways._
+
+---
+
+## 5. Learned Twig and MVC principles
+
+Twig was such an expressive templating language and made it easier apply new methodologies like 
+[Atomic Design](https://atomicdesign.bradfrost.com/chapter-2/).
+
+---
+
+## 6. Started working with WordPress
+
+After working with WordPress themes in the traditional way I quickly got frustrated and looked for a way
+to use Twig.
+
+**I found it!** _Thanks Timber!_
+
+---
+
+## 7. Continued to learn 
+
+* Clean code principles
+* 12 Factor app principles
+* etc.
 
 ---
 <!--
@@ -56,27 +111,32 @@ _class: lead
 -->
 # Why is this important?
 
+:question:
+
+---
+
+## Separation of concerns
+
+It is trivial for a front-end developer to theme with no very little knowledge of WordPress.
+
+---
+
+## Maintainability
+
+:wrench:
+
+Adding functionality with clean, objected oriented, and well organized code
+
 ---
 <!--
 _class: lead
 -->
-# Developer happiness is important
 
-> Some quote here about something.
- -- Some person
----
+## Developer happiness is important
 
-# How I got here
+❝ A happy developer is a productive developer. :v:
 
-* Started as a web designer
-* Fell in love with Drupal 
-* Learned how to "theme" websites
-* Started to get frustrated with Drupal 6 and 7 theming
-* Learned how to write object-oriented code and MVC frameworks
-* Even more frustrated with Drupal
-* Started working with Wordpress
-* Tried out some MVC principles in Wordpress, and they worked!!!
-
+We cannot overstate the importance of enjoying our work.
 
 --- 
 <!--
@@ -457,13 +517,13 @@ class SingleController extends Controller
 
 # Traditional WordPress templating
 
-Compare this to a traditional version of the same template where everything is in the controller.
+Compare this to a traditional version of the same template where everything is in the **controller**.
 
 ---
 
 ```php
 /*
- * single.php
+ * single-news.php
  */
 <div class="news-article-page">
     <h1 class="news-article-page__title">
@@ -492,7 +552,7 @@ Compare this to a traditional version of the same template where everything is i
 ---
 
 
-# Atom design 
+# Atomic design 
 
 Now that we have pulled out the templates from WordPress template files we are free to organize our templates
 in a way that supports our Atomic Design methodology.
@@ -534,7 +594,7 @@ in a way that supports our Atomic Design methodology.
 
 ---
 
-# Next, include our MVC "theme" framework
+# Next
 
 ![width:500px](/assets/lumberjack.svg)
 
@@ -550,7 +610,7 @@ Lumberjack is a framework for your theme that allows you to _"write better, more
 
 Lumberjack supports...
 
-* Registering post types
+* Creating post type objects
 * Creating custom routes
 * WP Query builder
 * ...much more
@@ -631,7 +691,7 @@ Now show how we can use the Post Type class to make WP_Query's, etc.
 
 ---
 
-# Advanced Custom Fields
+# Advanced Custom Fields (ACF)
 
 ![image](/assets/acf-pro.png)
 
@@ -640,12 +700,17 @@ Now show how we can use the Post Type class to make WP_Query's, etc.
 # Wait? What about Gutenberg
 
 * It is not good for MVC (yet)
-* They chose to store it as a blob of markup and HTML comments
+* Blocks are stored as a blob of markup and HTML comments
 * Not very useful as structured data
+
+<!--
+- ACF has support for making Gutenberg block using ACF fields that is more structured.
+- But there are other challenges with Gutenberg that keep us from adopting it.
+- We still prefer the ACF Flexible Content model.
 
 ---
 
-# First, the old way
+# Registering ACF fields, the old way
 
 * Use the UI and exports a JSON file.
 * Export PHP and find a good place for it.
@@ -713,7 +778,7 @@ https://github.com/StoutLogic/acf-builder
 ---
 
 ```php
-php
+<?php
 
 use App\ACF\FieldsBuilder;
 use App\PostTypes\News;
@@ -748,49 +813,6 @@ return $builder;
 
 ---
 
-```php
-/* The Lumberjack way 
-   app/PostTypes/Profile.php */
-namespace App\PostTypes;
-
-use Rareloop\Lumberjack\Post;
-
-class Profile extends Post
-{
-    public static function getPostType()
-    {
-        return 'Profile';
-    }
-    protected static function getPostTypeConfig()
-    {
-        return [
-            'labels' => [
-                'name' => __('Profile'),
-                'singular_name' => __('Profile'),
-                'add_new_item' => __('Add New Profile'),
-            ],
-            'public' => true,
-            'rewrite' => array('slug' => 'profile'),
-        ];
-    }
-}
-```
-
----
-
-Now register the post type
-
-```php
-/* Lumberjack
-   config/posttypes.php */
-return [
-    'register' => [
-        App\PostTypes\Profile::class,
-    ],
-];
-```
-
----
 
 # Unit Testing
 
