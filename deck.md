@@ -45,9 +45,9 @@ _class: lead
 -->
 # A little about me
 
-![bg right:40% 70%](https://pixotech.com/image/build.svg)
+![bg right:40% 70%](/assets/jason-rambeck.jpg)
 
-I am a lead web developer at Pixo here in Urbana. I work primarily on content management systems and websites - 
+I am a lead web developer at Pixo. I work primarily on content management systems and websites - 
 especially WordPress.
 
 ---
