@@ -75,7 +75,7 @@ _class: lead
 * Learned how to write object-oriented code and MVC frameworks
 * Even more frustrated with Drupal
 * Started working with Wordpress
-* Tried out some MVC principles in Wordpress, and they worked!!
+* Tried out some MVC principles in Wordpress, and they worked!!!
 
 
 --- 
@@ -84,7 +84,7 @@ _class: lead
 -->
 ![image](/assets/wordpress-logo.svg)
 
-Why?
+## Why Wordpress?
 
 ---
 
@@ -134,7 +134,7 @@ class: lead
 
 # First, start with a good foundation
 
-![image](/assets/bedrock.svg)
+![width:500px](/assets/bedrock.svg)
 
 * Modern directory structure
 * Composer-base dependency management
@@ -142,26 +142,81 @@ class: lead
 
 ---
 
+# Directory structure
+## WordPress standard vs. Bedrock
 
-```tree
-├── composer.json
-├── config
-│   ├── application.php
-│   └── environments
-│       ├── development.php
-│       ├── staging.php
-│       └── production.php
-├── vendor
-└── web
-    ├── app
-    │   ├── mu-plugins
-    │   ├── plugins
-    │   ├── themes
-    │   └── uploads
-    ├── wp-config.php
-    ├── index.php
-    └── wp
+---
+
+```bash
+project/
+├── index.php
+├── license.txt
+├── readme.html
+├── wp-activate.php
+├── wp-admin/
+├── wp-blog-header.php
+├── wp-comments-post.php
+├── wp-config-sample.php
+├── wp-content/
+│   ├── index.php
+│   ├── plugins/
+│   └── themes/
+├── wp-cron.php
+├── wp-includes/
+├── wp-links-opml.php
+├── wp-load.php
+├── wp-login.php
+├── wp-mail.php
+├── wp-settings.php
+├── wp-signup.php
+├── wp-trackback.php
+└── xmlrpc.php
 ```
+
+---
+<!---
+* Web root is no longer the project root. Allows for code, config, and documentation that is not exposed to the web server
+* `wp-content/` is now `app/` 
+--->
+
+```bash
+project/
+├── config/
+│   ├── environments/
+│   │   ├── development.php
+│   │   ├── staging.php
+│   │   └── production.php
+│   └── application.php   # Primary wp-config.php
+├── vendor/               # Composer dependencies
+└── web/                  # Virtual host document root
+    ├── app/              # WordPress content directory
+    │   ├── mu-plugins/
+    │   ├── plugins/
+    │   ├── themes/
+    │   └── uploads/
+    └── wp/               # WordPress core
+```
+---
+
+# Dependency management
+
+```bash
+wp plugin install redirection   # Install a plugin and commit the code
+wp plugin update redirection    # Update a plugin
+```
+## vs.
+```bash
+composer require 'wpackagist-plugin/redirection'  # Install a plugin
+composer outdated                                 # Check for updates
+composer update 'wpackagist-plugin/redirection'   # Update a plugin 
+```
+
+<!-- 
+- WP-CLI is a powerful tool and allowed developers to manage plugins from the command line.
+- Bedrock takes it to the next level and allows dependency management that is standard for PHP using Composer.
+- All packages hosted on Wordpress.org have a WPackagist package.
+- Github only packages can be added as well.
+-->
 
 ---
 
@@ -199,6 +254,87 @@ class: lead
 ```
 ---
 
+
+# WordPress standard configuration management
+
+NOPE. There is no built-in way to manage configuration for each environment.
+
+---
+
+Here is how we used to do it.
+
+---
+
+```php
+/**
+ * /wp-config.php
+ */
+if (file_exists(dirname(__FILE__) . '/wp-config-local.php'))
+        require_once(dirname(__FILE__) . '/wp-config-local.php');
+/**
+ * /wp-config-local.php
+ */
+define('DB_NAME', 'wordpress');
+define('DB_USER', 'wordpress');
+define('DB_PASSWORD', 'wordpress');
+define('DB_HOST', 'mariadb');
+
+define('AUTH_KEY', 'fill-in');
+define('SECURE_AUTH_KEY', 'fill-in');
+define('LOGGED_IN_KEY', 'fill-in');
+define('NONCE_KEY', 'fill-in');
+...
+
+define('WP_DEBUG', true);
+define('WP_DEBUG_DISPLAY', true);
+define('DISALLOW_FILE_MODS', true);
+```
+
+---
+
+Bedrock replaces `wp-config-local.php with` separate environment variable and configuration methods.
+
+---
+
+# The .env file
+
+The modern standard for loading environment variable is the `.env` file. Now it comes to WordPress.
+All thanks to Bedrock's implementation of the `phpdotenv` [package](https://github.com/vlucas/phpdotenv).
+
+---
+
+```bash
+# /.env
+
+# PROJECT SETTINGS
+PROJECT_NAME=example
+PROJECT_TITLE="Example Project"
+PROJECT_BASE_URL=example.localhost
+# DATABASE CREDENTIALS
+DB_NAME=wordpress
+DB_USER=wordpress
+DB_PASSWORD=wordpress
+DB_HOST=mariadb
+# Environment
+WP_ENV=development
+WP_HOME=http://${PROJECT_BASE_URL}
+WP_SITEURL=${WP_HOME}/wp
+# SECURITY HASHES
+AUTH_KEY='000'
+SECURE_AUTH_KEY='000'
+LOGGED_IN_KEY='000'
+...
+# LICENSE KEYS
+ACF_PRO_KEY='fill-in'
+GRAVITY_FORMS_KEY='fill-in'
+```
+
+---
+
+# Environment configuration
+
+---
+
 ```php
 <?php
 /**
@@ -213,49 +349,218 @@ Config::define('WP_DEBUG_DISPLAY', true);
 Config::define('WP_DISABLE_FATAL_ERROR_HANDLER', true);
 Config::define('SCRIPT_DEBUG', true);
 ini_set('display_errors', '1');
-
-// Enable plugin and theme updates and installation from the admin
 Config::define('DISALLOW_FILE_MODS', false);
 ```
 ---
-```env 
-# /.env
-
-# DATABASE CREDENTIALS
-DB_NAME=wordpress
-DB_USER=wordpress
-DB_PASSWORD=wordpress
-DB_ROOT_PASSWORD=password
-DB_HOST=mariadb
-
-# SECURITY HASHES
-AUTH_KEY='000'
-SECURE_AUTH_KEY='000'
-LOGGED_IN_KEY='000'
-NONCE_KEY='000'
-AUTH_SALT='000'
-SECURE_AUTH_SALT='000'
-LOGGED_IN_SALT='000'
-NONCE_SALT='000'
-
-# LICENSE KEYS
-ACF_PRO_KEY='000'
-GRAVITY_FORMS_KEY='000'
-```
-
----
 
 # Templating
+
+Timber adds Twig templating with and MVC structure to WordPress themes.
 
 ![width:500px](/assets/timber.svg)
 
 ---
 
-# Next, include our MVC theme framework
+Let's start by creating a **viewmodel**!
+
+---
+
+```php
+<?php
+
+namespace App\ViewModels;
+
+class NewsArticleViewModel
+{
+    public static function createFromPost($post)
+    {
+        $viewModel = new NewsArticleViewModel();
+
+        $viewModel->title = $post->title;
+        $date = new \DateTime($post->post_date);
+        $viewModel->publicationDate = $date->format('F d, Y');
+        $viewModel->introduction = get_field('introduction');
+
+        return $viewModel;
+    }
+}
+```
+<!-- 
+We are starting with just some basic PHP code to create our viewmodel object from the WP Post.
+-->
+
+---
+
+Now create the **view** using Twig.
+
+---
+
+```twig
+{# pages/news-article.twig #}
+{% extends "templates/base.twig" %}
+
+{% block content %}
+    <div class="news-article-page">
+        <h1 class="news-article-page__title">
+          {{ post.title }}
+        </h1>
+        <div class="news-article-page__date">
+          {{ post.publicationDate }}
+        </div>
+        {% if post.introduction %}
+        <div class="news-article-page__introduction">
+          {{ post.introduction }}
+        </div>
+        {% endif %}
+        <div class="news-article-page__body">
+          {{ post.body }}
+        </div>
+    </div>
+{% endblock %}
+```
+
+---
+
+Finally, let's hook it all up with our controller.
+
+---
+
+```php
+<?php
+
+/**
+ * single-news.php
+ */
+
+namespace App;
+
+use App\Http\Controllers\Controller;
+use Rareloop\Lumberjack\Http\Responses\TimberResponse;
+use Rareloop\Lumberjack\Post;
+use Timber\Timber;
+
+class SingleController extends Controller
+{
+    public function handle()
+    {
+        $context = Timber::get_context();
+        $post = new Post();
+
+        $context['post'] = NewsArticleViewModel::createFromPost($post);
+
+        return new TimberResponse('patterns/pages/news-article.twig', $context);
+    }
+}
+```
+
+---
+
+# Traditional WordPress templating
+
+Compare this to a traditional version of the same template where everything is in the controller.
+
+---
+
+```php
+/*
+ * single.php
+ */
+<div class="news-article-page">
+    <h1 class="news-article-page__title">
+        <?php the_title(); ?>
+    </h1>
+    <?php 
+        $date = new /DateTime(the_date());
+        $publicationDate = $date->format('F d, Y'); 
+    ?>
+    <div class="news-article-page__date">
+          <?php echo $publicationDate; ?>
+    </div>
+    <?php
+        if (get_field('introduction')) {
+	        echo '<div class="news-article-page__introduction">' . get_field('introduction') . '</div>';
+        }
+    ?>
+    <div class="news-article-page__body">
+          <?php echo get_field('body'); ?>
+    </div>
+
+</div> 
+
+```
+
+---
+
+
+# Atom design 
+
+Now that we have pulled out the templates from WordPress template files we are free to organize our templates
+in a way that supports our Atomic Design methodology.
+
+---
+
+```bash
+/web/app/themes/custom/patterns
+├── bits
+│   └── button
+│       ├── button.config.js
+│       ├── button.styl
+│       └── button.twig
+├── components
+│   └── image
+│       ├── image.config.js
+│       ├── image.styl
+│       └── image.twig
+│   └── text
+│       ├── text.config.js
+│       ├── text.styl
+│       └── text.twig
+├── pages
+│   ├── landing
+│   |   ├── landing.config.js
+│   │   ├── landing.styl
+│   │   └── landing.twig
+├── partials
+│   └── news-card
+│       ├── news-card.config.js
+│       ├── news-card.styl
+│       └── news-card.twig
+└── templates
+│   └── base
+│       ├── base.config.js
+│       ├── base.styl
+│       └── base.twig
+```
+
+---
+
+# Next, include our MVC "theme" framework
 
 ![width:500px](/assets/lumberjack.svg)
 
+Lumberjack is a framework for your theme that allows you to _"write better, more expressive and easier to maintain code."_
+
+
+<!--
+- Lumberjack is a theme-based framework. 
+- The packages are all Composer dependencies.
+-->
+
 ---
+
+Lumberjack supports...
+
+* Registering post types
+* Creating custom routes
+* WP Query builder
+* ...much more
+
+---
+
+# Registering a custom post type
+
+---
+
 ```php
 // The way we used to do it.
 // functions.php
@@ -278,11 +583,72 @@ add_action( 'init', 'create_posttype' );
 
 ---
 
-# ACF Builder
+```php
+/* The Lumberjack way 
+   app/PostTypes/Profile.php */
+namespace App\PostTypes;
+
+use Rareloop\Lumberjack\Post;
+
+class Profile extends Post
+{
+    public static function getPostType()
+    {
+        return 'Profile';
+    }
+    protected static function getPostTypeConfig()
+    {
+        return [
+            'labels' => [
+                'name' => __('Profile'),
+                'singular_name' => __('Profile'),
+                'add_new_item' => __('Add New Profile'),
+            ],
+            'public' => true,
+            'rewrite' => array('slug' => 'profile'),
+        ];
+    }
+}
+```
+
+---
+
+Now register the post type
+
+```php
+/* Lumberjack
+   config/posttypes.php */
+return [
+    'register' => [
+        App\PostTypes\Profile::class,
+    ],
+];
+```
+
+---
+
+Now show how we can use the Post Type class to make WP_Query's, etc.
+
+---
+
+# Advanced Custom Fields
 
 ![image](/assets/acf-pro.png)
 
-https://github.com/StoutLogic/acf-builder
+---
+
+# Wait? What about Gutenberg
+
+* It is not good for MVC (yet)
+* They chose to store it as a blob of markup and HTML comments
+* Not very useful as structured data
+
+---
+
+# First, the old way
+
+* Use the UI and exports a JSON file.
+* Export PHP and find a good place for it.
 
 ---
 
@@ -293,29 +659,37 @@ https://github.com/StoutLogic/acf-builder
 acf_add_local_field_group([
     'key' => 'group_1',
     'title' => 'My Group',
-    'fields' => [
-        [
-            'key' => 'field_title',
-            'label' => 'Title',
-            'name' => 'title',
-            'type' => 'text',
-        ],
-        [
-            'key' => 'field_description',
-            'label' => 'Description',
-            'name' => 'description',
+    'fields' => array (
+        array (
+            'key' => 'field_summary',
+            'label' => 'Summary',
+            'name' => 'Summary',
             'type' => 'textarea',
-        ]
-    ],
-    'location' => [
-        [
-            [
+        ),
+        array (
+            'key' => 'field_categories',
+            'label' => 'Categories',
+            'name' => 'categories',
+            'type' => 'checkbox',
+            'width' => '33%',
+            'choices' => array (
+                array (
+                    'faculty_staff' => 'Faculty & Staff',
+                    'community_impact' => 'Community Impact',
+                    'professional_development' => 'Professional Development',
+                )
+            )
+        )
+    ),
+    'location' => array (
+        array (
+            array (
                 'param' => 'post_type',
                 'operator' => '==',
                 'value' => 'post',
-            ],
-        ],
-    ],
+            ),
+        ),
+    ),
     'menu_order' => 0,
     'position' => 'normal',
     'style' => 'default',
@@ -324,31 +698,45 @@ acf_add_local_field_group([
 ]);
 ```
 
+<!--
+Just one big specially formatted PHP object.
+-->
+
+---
+
+# Enter... ACF Builder
+
+![image](/assets/acf-pro.png)
+
+https://github.com/StoutLogic/acf-builder
+
 ---
 
 ```php
-<?php 
+php
 
-use StoutLogic\AcfBuilder\FieldsBuilder;
+use App\ACF\FieldsBuilder;
+use App\PostTypes\News;
 
-$post = new FieldsBuilder('post');
+$builder = new FieldsBuilder('news');
 
-$post
-    ->setLocation('post_type', '==', 'post');
+$builder->setLocation('post_type', '==', News::getPostType());
 
-$post
-    ->addTrueFalse('enable_example', ['ui' => 1])
-        ->setInstructions('Enables our example fields shown below.')
+$builder->addRichText('summary')
+    ->setLabel('Summary')
+    ->setInstructions('A summary (about 25 words) of the article.')
+    ->setRequired();
 
-    ->addText('title')
-        ->setInstructions('This is your title field.')
-        ->conditional('enable_example', '==', '1')
+$builder->addCheckbox('categories')
+    ->addChoice('Faculty & Staff')
+    ->addChoice('Community Impact')
+    ->addChoice('Professional Development')
+    ->setWidth('33%')
+    ->setInstructions('Select all categories that apply.');
 
-    ->addTextarea('description')
-        ->setInstructions('This is your description field.')
-        ->conditional('enable_example', '==', '1');
+return $builder;
 
-acf_add_local_field_group($post->build());
+
 ```
 
 <!--
@@ -422,5 +810,14 @@ We are working on a better framework for that.
 - [Lumberjack](https://lumberjack.rareloop.com/)
 - [Bedrock](https://roots.io/bedrock/)
 
+## and...
+
+- [Carbon Fields](https://carbonfields.net/)
+- [WP Emerge - Wordpress MVC framework](https://github.com/htmlburger/wpemerge)
+
+
+---
+
+# Fin
 
 ---
