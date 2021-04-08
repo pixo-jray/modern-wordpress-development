@@ -47,7 +47,7 @@ _class: lead
 -->
 # A little about me
 
-![bg right:40% 70%](/assets/jason-rambeck.jpg)
+![bg left:40% 70%](/assets/jason-rambeck.jpg)
 
 I am a lead web developer at Pixo. I work primarily on content management systems and websites - 
 especially WordPress.
@@ -119,14 +119,15 @@ _class: lead
 
 ## Separation of concerns
 
-With a robust MVC architecture it is trivial for a front-end developer to theme with no very little knowledge of WordPress.
+With a robust MVC architecture it is trivial for a front-end developer to theme with very little knowledge of WordPress.
 
 ---
 
 ## Maintainability :wrench:
 
-- UI vs. Code
-- An object-oriented code framework
+- Simply writing more code (vs. UI configuration or plugins)
+- Having a framework to organize your code
+- Using object-oriented code 
 
 <!--
 When functionality is added with more and more plugins and configuration screens it becomes impossible keep track of
@@ -167,7 +168,7 @@ _class: lead
 
 ## Why developers DON'T like WordPress
 
-* Big hacker target
+* A hacker target
 * Easily misused (too many plugins) 
 * Legacy code base
     * Procedural code
@@ -209,9 +210,9 @@ class: lead
 
 ![width:500px](/assets/bedrock.svg)
 
-* Modern directory structure
-* Composer-based dependency management
-* Environment configuration management
+1) Modern directory structure
+2) Composer-based dependency management
+3) Environment configuration management
 
 ---
 
