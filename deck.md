@@ -29,6 +29,8 @@ marp: true
 
 ![bg left:40% 70%](/assets/wordpress-logo.svg)
 
+WebCon - April 8, 2021
+
 # **Modern Wordpress Development**
 
 https://pixotech.com
@@ -85,7 +87,7 @@ _It is better today but still a struggle in a lot of ways._
 
 ## 5. Learned Twig and MVC principles
 
-Twig was such an expressive templating language and made it easier apply new methodologies like 
+Twig was such an expressive templating language and made it easier to apply new methodologies like 
 [Atomic Design](https://atomicdesign.bradfrost.com/chapter-2/).
 
 ---
@@ -95,14 +97,14 @@ Twig was such an expressive templating language and made it easier apply new met
 After working with WordPress themes in the traditional way I quickly got frustrated and looked for a way
 to use Twig.
 
-**I found it!** _Thanks Timber!_
+**I found it!** _Thanks [Timber](https://upstatement.com/timber/)!_
 
 ---
 
 ## 7. Continued to learn 
 
-* Clean code principles
-* 12 Factor app principles
+* [Clean code](https://www.freecodecamp.org/news/clean-coding-for-beginners) principles
+* [12 Factor app](https://12factor.net/) principles
 * etc.
 
 ---
@@ -111,32 +113,36 @@ _class: lead
 -->
 # Why is this important?
 
-:question:
+![doc brown asking why gif](/assets/why.gif)
 
 ---
 
 ## Separation of concerns
 
-It is trivial for a front-end developer to theme with no very little knowledge of WordPress.
+With a robust MVC architecture it is trivial for a front-end developer to theme with no very little knowledge of WordPress.
 
 ---
 
-## Maintainability
+## Maintainability :wrench:
 
-:wrench:
+- UI vs. Code
+- An object-oriented code framework
 
-Adding functionality with clean, objected oriented, and well organized code
+<!--
+When functionality is added with more and more plugins and configuration screens it becomes impossible keep track of
+how things work.
+-->
 
 ---
 <!--
 _class: lead
 -->
 
-## Developer happiness is important
-
-❝ A happy developer is a productive developer. :v:
+## Developer happiness is important :grin:
 
 We cannot overstate the importance of enjoying our work.
+<br>
+**"A happy developer is a productive developer"**
 
 --- 
 <!--
@@ -148,7 +154,7 @@ _class: lead
 
 ---
 
-![bg right:33% 100%](/assets/kip.gif)
+![bg left:33% 100%](/assets/kip.gif)
 ## Why we like WordPress
 
 * Familiar user interface
@@ -159,13 +165,13 @@ _class: lead
 
 ---
 
-## Why "developers" DON'T like WordPress
+## Why developers DON'T like WordPress
 
 * Big hacker target
 * Easily misused (too many plugins) 
 * Legacy code base
     * Procedural code
-    * Difficult to keep DRY
+    * Difficult to keep [DRY](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself) (Don't Repeat Yourself)
     * Logical code in theming layer
 
 ![bg left:33% 100%](/assets/frustrated.gif)
@@ -204,7 +210,7 @@ class: lead
 ![width:500px](/assets/bedrock.svg)
 
 * Modern directory structure
-* Composer-base dependency management
+* Composer-based dependency management
 * Environment configuration management
 
 ---
@@ -239,6 +245,11 @@ project/
 ├── wp-trackback.php
 └── xmlrpc.php
 ```
+
+<!--
+- It is a flat structure.
+- The web root is the project root.
+-->
 
 ---
 <!---
@@ -365,7 +376,7 @@ Bedrock replaces `wp-config-local.php with` separate environment variable and co
 
 # The .env file
 
-The modern standard for loading environment variable is the `.env` file. Now we can have it in WordPress.
+The modern standard for storing environment variables is the `.env` file. Now we can have it in WordPress.
 All thanks to Bedrock's implementation of the `phpdotenv` [package](https://github.com/vlucas/phpdotenv).
 
 ---
@@ -414,7 +425,6 @@ We can and do use the .env file for more than just WordPress.
 
 use Roots\WPConfig\Config;
 
-Config::define('SAVEQUERIES', true);
 Config::define('WP_DEBUG', true);
 Config::define('WP_DEBUG_DISPLAY', true);
 Config::define('WP_DISABLE_FATAL_ERROR_HANDLER', true);
@@ -426,7 +436,7 @@ Config::define('DISALLOW_FILE_MODS', false);
 
 # Templating
 
-Timber adds Twig templating with and MVC structure to WordPress themes.
+Timber adds Twig templating with an MVC structure to WordPress themes.
 
 ![width:500px](/assets/timber.svg)
 
@@ -532,7 +542,7 @@ Compare this to a traditional version of the same template where everything is i
 
 ---
 
-```php
+```html
 /*
  * single-news.php
  */
@@ -566,7 +576,8 @@ Compare this to a traditional version of the same template where everything is i
 # Atomic design 
 
 Now that we have pulled out the templates from WordPress template files we are free to organize our templates
-in a way that supports our Atomic Design methodology.
+in a way that supports our [Atomic Design](https://atomicdesign.bradfrost.com/chapter-2/) methodology.
+
 
 ---
 
@@ -709,20 +720,22 @@ return [
 ---
 
 ```php
-// WP_Query arguments
+// How we used to do it.
+/* Set the WP_Query arguments */
 $args = array(
 	'post_type'              => array( 'project' ),
 	'order'                  => 'ASC',
 	'orderby'                => 'title',
 );
 
-// The Query
+/* The Query */
 $query = new WP_Query( $args );
 ```
 
 ---
 
 ```php
+// The Lumberjack way
 use App\PostTypes\Project;
 
 $projects = Project::builder()->get();
@@ -749,6 +762,12 @@ $projects = Project::builder()
     ->limit(3)
     ->get();
 ```
+
+<!--
+You now have about a dozen chainable methods available to configure your query.
+Your IDE knows all about these methods and can autocomplete and hint at the parameters.
+Your IDE cannot help you figure your $args array.
+-->
 
 ---
 
@@ -816,6 +835,12 @@ return [
 ];
 ```
 
+<!-- 
+Registering menus is not difficult in Wordpress.
+However, just have a single location to register them and abstracting away the Wordpress method into
+a simple array is so much nicer.
+-->
+
 ---
 
 ## Custom routes
@@ -849,13 +874,14 @@ class TestController
 # Wait? What about Gutenberg
 
 * It is not good for MVC (yet)
-* Blocks are stored as a blob of markup and HTML comments
+* Block are stored as a blob of data, markup, and HTML comments
 * Not very useful as structured data
 
 <!--
-- ACF has support for making Gutenberg block using ACF fields that is more structured.
+- ACF has support for making Gutenberg blocks using ACF fields that is more structured.
 - But there are other challenges with Gutenberg that keep us from adopting it.
 - We still prefer the ACF Flexible Content model.
+-->
 
 ---
 
@@ -863,6 +889,10 @@ class TestController
 
 * Use the UI and exports a JSON file.
 * Export PHP and find a good place for it.
+
+---
+
+![ACF fields UI screenshot width:800px](/assets/acf-ui.png)
 
 ---
 
@@ -961,14 +991,7 @@ return $builder;
 
 ---
 
-
-# Unit Testing
-
-## ??
-
-:cry:
-
-We are working on a better framework for that.
+![Screenshot of IDE hints width:1000px](/assets/acf-ide.png)
 
 ---
 
@@ -995,5 +1018,7 @@ We are working on a better framework for that.
 ---
 
 # Fin
+
+Follow or connect with me on [LinkedIn](https://www.linkedin.com/in/jasonrambeck).
 
 ---
